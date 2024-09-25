@@ -1,0 +1,81 @@
+import recurso
+from proceso import Procesos
+
+@staticmethod
+def printLines():
+    print("----------------------------------------------------------------------")
+
+class BCP:
+    # Estados que pueden tener los procesos
+    estados_procesos = ("nuevo","listo","bloqueado","ejecucion","terminado")
+
+    # Lista donde se almacenarán todos los procesos
+    procesos = []
+
+    # Cola que se usará para cada proceso
+    cola_nuevo = []
+    cola_listo = []
+    cola_bloqueado = []
+    cola_ejecucion = []
+    cola_terminado = []
+
+    # Vector de recursos (lista)
+    Recur = []  #Cree este vector para que ahi se puedan agregar varios recursos(memoria, disco, etc...)
+    
+    def creacion_proceos(self):
+        numero_procesos = int(input("Ingrese el número de procesos que desea crear: "))
+        printLines()
+        id_proceso = 0
+
+        for i in range(numero_procesos):
+            id_proceso += 1
+            
+            print(f"\tProceso {id_proceso}")
+            printLines()
+            espacio = int(input("Ingrese el espacio requerido por el proceso: "))
+            numero_recursos = int(input("Ingrese la cantidad de recursos que va a necesitar el proceso: "))
+            hilos = int(input("Ingrese el número de hilos que va a tener el proceso: "))
+            printLines()
+
+            # Aquí creamos el proceso
+            proceso = Procesos(id_proceso, espacio, hilos, numero_recursos)
+            self.procesos.append(proceso)
+            
+            # Guardamos los recursos en el vector Recur[]
+            self.guardar_recursos(numero_recursos)
+            
+            # Asignamos recursos a los hilos y mostramos el resultado
+            self.asignar_recursos_a_hilos(hilos)
+
+    def guardar_recursos(self, numero_recursos): #Este metodo es para guardar los recursos que se van a utilizar 
+        print("\nAñadiendo recursos al vector Recur[]...")
+        for i in range(numero_recursos):
+            recurso = input(f"Ingrese el nombre del recurso {i + 1}: ")
+            self.Recur.append(recurso)
+        print("Recursos agregados con éxito!")
+        printLines()
+
+    def asignar_recursos_a_hilos(self, hilos):   #En este metodo, lo mire como que por X cantidad de recursos se divide en la cantidad de hilos que se ingreso por consola
+        print(f"\nAsignando recursos a {hilos} hilos...\n")
+        recursos_por_hilo = len(self.Recur) // hilos  # Dividimos los recursos entre los hilos
+        resto_recursos = len(self.Recur) % hilos  # En caso de que no sean divisibles perfectamente
+
+        for i in range(hilos):
+            print(f"Hilo {i + 1}:")
+            # Asignamos recursos al hilo
+            inicio = i * recursos_por_hilo
+            fin = inicio + recursos_por_hilo
+
+            recursos_asignados = self.Recur[inicio:fin]
+            print(f"\tRecursos asignados: {recursos_asignados}")
+
+        printLines()
+
+    def mostrar_procesos(self):
+        """Muestra los procesos creados y sus detalles"""
+        print("\tProcesos")
+        printLines()
+
+        for elemento in self.procesos:
+            print(elemento.mostrarProceso())
+            printLines()
